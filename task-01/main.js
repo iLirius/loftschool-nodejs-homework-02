@@ -27,12 +27,12 @@ const requestHandler = (request, response) => {
     });
 
     let intervallId = setInterval(() => {
-      console.log(new Date().toString());
+      console.log(isoDate());
     }, argv.interval);
 
     setTimeout(() => {
       clearInterval(intervallId);
-      response.write(new Date().toString());
+      response.write(isoDate());
       response.end();
     }, argv.timeout);
 
@@ -40,6 +40,11 @@ const requestHandler = (request, response) => {
     response.end();
   }
 };
+
+
+function isoDate() {
+  return new Date().toISOString();
+}
 
 http.createServer(requestHandler).listen(argv.port, (err) => {
   if (err) {

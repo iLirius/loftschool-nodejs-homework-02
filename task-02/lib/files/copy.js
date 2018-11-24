@@ -2,7 +2,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Developers requires
-const fl = require('../../firstLetter');
+const fl = require('../firstLetter');
+const write = require('./write');
+const reader = require('./reader');
 /**
  * Ф-я чтения и записи файла в директорию.
  * @param {string} sourceDir Название директории источника
@@ -10,29 +12,20 @@ const fl = require('../../firstLetter');
  * @param {string} file Название файла для для R/W
  * @returns {void}
  */
-const readWrite = (sourceDir, destDir, file) => {
+const copy = async (sourceDir, destDir, file) => {
   destDir = path.join(destDir, fl(file));
   const sourceFile = path.join(sourceDir, file);
   const destFile = path.join(destDir, file);
 
-  fs.readFile(sourceFile, (err, data) => {
-    console.log('Копируем файла:', file);
-    if (err) {
-      console.error(err.message);
-      return;
-    }
+  if (!fs.existsSync(destDir)) {
+    fs.mkdirSync(destDir);
+  }
 
-    if (!fs.existsSync(destDir)) {
-      fs.mkdirSync(destDir);
-    }
-
-    fs.writeFile(destFile, data, err => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-    });
+  await reader(sourceFile).then(data => {
+    write(destFile, data);
   });
+
+  return true;
 };
 
-module.exports = readWrite;
+module.exports = copy;
